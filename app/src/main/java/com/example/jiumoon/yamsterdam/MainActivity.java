@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                location = locationText.getText().toString();
                 new RetrieveFeedTask().execute();
             }
         });
@@ -68,10 +70,9 @@ public class MainActivity extends AppCompatActivity {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder stringBuilder = new StringBuilder();
                     String line;
+                    //Read events
                     while ((line = bufferedReader.readLine()) != null) {
                         stringBuilder.append(line).append("\n");
-                        eventCount++;
-                        Log.v(Integer.toString(eventCount),"sup");
                     }
                     bufferedReader.close();
                     return stringBuilder.toString();
@@ -92,22 +93,32 @@ public class MainActivity extends AppCompatActivity {
             }
             progressBar.setVisibility(View.GONE);
             Log.i("INFO", response);
-            responseView.setText(response);
+
+
             // TODO: check this.exception
             // TODO: do something with the feed
+            int keysCount = 0;
+            try {
+                JSONObject object = new JSONObject(response);
+                object = object.getJSONObject("events");
+                JSONArray events = object.getJSONArray("event");
+                JSONObject firstEvent = events.getJSONObject(0);
+                Iterator<String> keys = firstEvent.keys();
+                String out = "";
+//                while (keys.hasNext()) {
+//                    out += keys.next() + "\n";
+//                }
 
-//            try {
-//                JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-//                String requestID = object.getString("requestId");
-//                int likelihood = object.getInt("likelihood");
-//                JSONArray photos = object.getJSONArray("photos");
-//                .
-//                .
-//                .
-//                .
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+                for (int i = 0; i < events.length(); i++) {
+                    JSONObject e = events.getJSONObject(i);
+                    out += e.getString("title");
+                    out += "\n";
+                }
+
+                responseView.setText(out);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
