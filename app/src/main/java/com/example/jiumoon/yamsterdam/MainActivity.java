@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     TextView responseView;
     ProgressBar progressBar;
     EditText locationText;
+    int eventCount = 0;
     String location = "Charlottesville";
     static final String API_KEY = "mRMksGwGMhrwbC94";
     static final String API_URL = "http://api.eventful.com/json/events/search?...";
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
                         stringBuilder.append(line).append("\n");
+                        eventCount++;
+                        Log.v(Integer.toString(eventCount),"sup");
                     }
                     bufferedReader.close();
                     return stringBuilder.toString();
