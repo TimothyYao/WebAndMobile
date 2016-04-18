@@ -4,14 +4,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.content.Context;
-import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,20 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
@@ -49,6 +37,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnConnectionFailedListener {
 
     // LogCat tag
@@ -61,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
 
-    public final static String EXTRA_MESSAGE = "com.example.jiumoon.yamsterdam.SELECTEDEVENT";
-    public final static String EXTRA_MESSAGE2 = "com.example.jiumoon.yamsterdam.SELECTEDEVENTDETAILS";
     ListView responseView;
     ProgressBar progressBar;
     EditText locationText;
@@ -74,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     String location = "Charlottesville";
     static final String API_KEY = "mRMksGwGMhrwbC94";
     static final String API_URL = "http://api.eventful.com/json/events/search?...";
-    ArrayList<String> myEvents;
-    ArrayList<String> eventDetails;
+    ArrayList<String> eventNames;
+    ArrayList<Event> myEvents;
     ArrayAdapter<String> arrayAdapter;
     //String[] from = new String[] {"rowid", "col_1", "col_2", "col_3"};
     //int[] to = new int[] { R.id.item1, R.id.item2, R.id.item3, R.id.item4 };
@@ -86,13 +73,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
 
 
-
         responseView = (ListView) findViewById(R.id.responseView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         locationText = (EditText) findViewById(R.id.locationText);
         //TODO: Change this to a SimpleAdapter to show both title and date
-        myEvents = new ArrayList<String>();
-        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,myEvents);
+        eventNames = new ArrayList<String>();
+        myEvents = new ArrayList<Event>();
+        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, eventNames);
         responseView.setAdapter(arrayAdapter);
 
 
@@ -116,9 +103,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                String selectedEvent = (String) parent.getItemAtPosition(position);
+                //String selectedEvent[] = {myEvents.get(position).getName(), myEvents.get(position).getDate(), myEvents.get(position).getDescription(), myEvents.get(position).getAddress()};
+
                 Intent intent = new Intent(MainActivity.this,showEvent.class);
-                intent.putExtra(EXTRA_MESSAGE, selectedEvent);
+                intent.putExtra("extra_name", myEvents.get(position).getName());
+                intent.putExtra("extra_date", myEvents.get(position).getDate());
+                intent.putExtra("extra_description", myEvents.get(position).getDescription());
+                intent.putExtra("extra_address", myEvents.get(position).getAddress());
                 //TODO:Pass in event details...
                 //intent.putExtra(EXTRA_MESSAGE2, selectedEventDetails);
                 startActivity(intent);
@@ -143,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     location = latitude + "," + longitude;
                     new RetrieveFeedTask().execute();
                 } else {
-                    myEvents.add("location not found ):");
+                    eventNames.add("location not found ):");
                     arrayAdapter.notifyDataSetChanged();
                 }
 
@@ -188,8 +179,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-
+        Log.d("swag", "" + CurrentEvents.events.size());
+        for (Event event : CurrentEvents.events) {
+            eventNames.add(event.getName());
+            myEvents.add(event);
+        }
+        arrayAdapter.notifyDataSetChanged();
         checkPlayServices();
+
     }
 
     @Override
@@ -267,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             try {
                 JSONObject object = new JSONObject(response);
                 if (object.isNull("events")) {
-                    myEvents.add("No events found ):");
+                    eventNames.add("No events found ):");
                     arrayAdapter.notifyDataSetChanged();
                     return;
                 }
@@ -279,16 +276,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 //                while (keys.hasNext()) {
 //                    out += keys.next() + "\n";
 //                }
+                eventNames.clear();
                 myEvents.clear();
+                CurrentEvents.events.clear();
                 for (int i = 0; i < events.length(); i++) {
                     eventCount++;
                     JSONObject e = events.getJSONObject(i);
-                    myEvents.add(e.getString("title"));
+                    String title = e.getString("title");
+                    String date = e.getString("start_time");
+                    String description = e.getString("description");
+                    String address = e.getString("venue_address");
+                    eventNames.add(title);
+                    myEvents.add(new Event(title,date,description,address));
+                    CurrentEvents.events.add(new Event(title,date,description,address));
+
                     //Log.d("hello",e.getString("title"));
                     //out += e.getString("title");
                     //out += "\n";
                 }
                 arrayAdapter.notifyDataSetChanged();
+                Log.d("swag", "b " + myEvents.size());
 
             } catch (JSONException e) {
                 e.printStackTrace();
