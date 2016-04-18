@@ -25,6 +25,14 @@
         android:layout_gravity="end"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="Search"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="Search Nearby"
+        android:id="@+id/locationButton" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
