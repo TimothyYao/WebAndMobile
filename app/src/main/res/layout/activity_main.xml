@@ -36,13 +36,10 @@
             android:indeterminate="true"
             android:layout_centerHorizontal="true"
             android:visibility="gone" />
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
+            <ListView
                 android:id="@+id/responseView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </ScrollView>
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true" />
     </RelativeLayout>
 </LinearLayout>
