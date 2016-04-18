@@ -89,8 +89,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
-        Event event = new Event(cursor.getString(0),
-                cursor.getString(1), cursor.getString(2), cursor.getString(3));
+        Event event = new Event(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
+                cursor.getString(2), cursor.getString(3), cursor.getString(4));
         // return Event
         return event;
     }
@@ -106,8 +106,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Event event = new Event(cursor.getString(0),
-                        cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                Event event = new Event(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
+                        cursor.getString(2), cursor.getString(3), cursor.getString(4));
                 // Adding Event to list
                 EventList.add(event);
             } while (cursor.moveToNext());
@@ -129,10 +129,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
 
-//    public void deleteContact(Contact contact) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
-//                new String[] { String.valueOf(contact.getID()) });
-//        db.close();
-//    }
+    public void deleteEvent(int id) {
+        if (id < 0) {
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EVENTS, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        db.close();
+    }
 }

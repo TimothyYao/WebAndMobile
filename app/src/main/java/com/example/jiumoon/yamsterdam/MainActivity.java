@@ -105,11 +105,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     long id) {
                 //String selectedEvent[] = {myEvents.get(position).getName(), myEvents.get(position).getDate(), myEvents.get(position).getDescription(), myEvents.get(position).getAddress()};
 
-                Intent intent = new Intent(MainActivity.this,showEvent.class);
+                Intent intent = new Intent(MainActivity.this, showEvent.class);
                 intent.putExtra("extra_name", myEvents.get(position).getName());
                 intent.putExtra("extra_date", myEvents.get(position).getDate());
                 intent.putExtra("extra_description", myEvents.get(position).getDescription());
                 intent.putExtra("extra_address", myEvents.get(position).getAddress());
+                intent.putExtra("extra_id", -1);
                 //TODO:Pass in event details...
                 //intent.putExtra(EXTRA_MESSAGE2, selectedEventDetails);
                 startActivity(intent);
@@ -139,6 +140,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
 
 
+            }
+        });
+
+        //Launch Saved Events
+        Button savedButton = (Button) findViewById(R.id.savedEventsButton);
+        savedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, savedEvents.class);
+                startActivity(intent);
             }
         });
     }
@@ -176,9 +187,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
+        eventNames.clear();
+        myEvents.clear();
         Log.d("swag", "" + CurrentEvents.events.size());
         for (Event event : CurrentEvents.events) {
             eventNames.add(event.getName());

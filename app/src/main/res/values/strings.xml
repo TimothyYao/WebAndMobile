@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Yamsterdam</string>
     <string name="title_activity_show_event"> </string>
+    <string name="title_activity_saved_events">savedEvents</string>
 </resources>
