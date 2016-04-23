@@ -17,14 +17,26 @@ public class showEvent extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_show_event);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton del = (FloatingActionButton) findViewById(R.id.delete);
+
+
         //Get the info
         final String name = intent.getStringExtra("extra_name");
         final String date = intent.getStringExtra("extra_date");
         final String description = intent.getStringExtra("extra_description");
         final String address = intent.getStringExtra("extra_address");
+        final int id = intent.getIntExtra("extra_id", 0);
+
+        if (id >= 0) {
+            fab.setVisibility(View.GONE);
+            del.setVisibility(View.VISIBLE);
+        }
 
         //Log.d("swag", message);
         TextView toolbar_text = (TextView)findViewById(R.id.toolbar_title);
@@ -38,13 +50,24 @@ public class showEvent extends AppCompatActivity {
         TextView address_text = (TextView)findViewById(R.id.addressView);
         address_text.setText(address);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatabaseHandler db = DatabaseHandler.getInstance(getApplicationContext());
-                db.addEvent(new Event(name, date, description, address));
-                Snackbar.make(view, "Saved Events: " + db.getEventsCount(), Snackbar.LENGTH_LONG)
+                Event e = new Event(name, date, description, address);
+                db.addEvent(e);
+                Snackbar.make(view, "Saved Event: " + e.getName(), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+            }
+        });
+
+        del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHandler db = DatabaseHandler.getInstance(getApplicationContext());
+                db.deleteEvent(id);
+                Snackbar.make(view, "Deleted Event: " + name, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
             }
