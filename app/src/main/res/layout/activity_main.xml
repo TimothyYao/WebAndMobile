@@ -26,12 +26,23 @@
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:text="Search"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="Search Nearby"
-        android:id="@+id/locationButton" />
+
+
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="right">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voice Search"
+            android:drawableRight="@android:drawable/ic_btn_speak_now"
+            android:id="@+id/btn_mic" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS Search"
+            android:drawableRight="@android:drawable/ic_menu_mapmode"
+            android:id="@+id/locationButton" />
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"

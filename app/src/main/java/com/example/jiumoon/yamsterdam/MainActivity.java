@@ -1,12 +1,14 @@
 package com.example.jiumoon.yamsterdam;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,6 +39,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnConnectionFailedListener {
@@ -49,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
+
+    //Speech recognition
+    //private SpeechRecognizer mSpeechRecognizer;
 
     ListView responseView;
     ProgressBar progressBar;
@@ -64,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     ArrayList<String> eventNames;
     ArrayList<Event> myEvents;
     ArrayAdapter<String> arrayAdapter;
+    private final int SPEECH_RECOGNITION_CODE = 1;
+    private Button btnMicrophone;
+    private Button queryButton;
     //String[] from = new String[] {"rowid", "col_1", "col_2", "col_3"};
     //int[] to = new int[] { R.id.item1, R.id.item2, R.id.item3, R.id.item4 };
 
@@ -72,6 +82,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Text to speech thing
+        btnMicrophone = (Button) findViewById(R.id.btn_mic);
+        btnMicrophone.setOnClickListener(new View.OnClickListener(){
+            @Override
+        public void onClick (View v){
+                startSpeechToText();
+            }
+        });
 
         responseView = (ListView) findViewById(R.id.responseView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -88,11 +106,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             buildGoogleApiClient();
         }
 
-        Button queryButton = (Button) findViewById(R.id.queryButton);
+        queryButton = (Button) findViewById(R.id.queryButton);
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                location = locationText.getText().toString();
+                location = locationText.getText().toString().replaceAll(" ","%20");
+                Log.d("locationtext", location);
                 useLocation = false;
                 new RetrieveFeedTask().execute();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -159,6 +178,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API).build();
+    }
+
+    //Voice Recognition
+    private void startSpeechToText() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Say a location");
+        try {
+            startActivityForResult(intent, SPEECH_RECOGNITION_CODE);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    "Sorry! Speech recognition unavailable for your device",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case SPEECH_RECOGNITION_CODE: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String text = result.get(0);
+                    Log.d("VOICE TO TEXT",text);
+                    locationText.setText(text, TextView.BufferType.EDITABLE);
+                    queryButton.performClick();
+                    //txtOutput.setText(text);
+                }
+                break;
+            }
+        }
     }
 
     private boolean checkPlayServices() {
