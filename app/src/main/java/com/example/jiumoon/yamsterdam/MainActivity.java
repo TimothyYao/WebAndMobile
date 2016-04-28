@@ -154,8 +154,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     location = latitude + "," + longitude;
                     new RetrieveFeedTask().execute();
                 } else {
-                    eventNames.add("location not found ):");
-                    arrayAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(),
+                            "Location Unavailable.",
+                            Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -353,8 +354,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     JSONObject e = events.getJSONObject(i);
                     String title = e.getString("title");
                     String date = e.getString("start_time");
-                    String description = e.getString("description");
+                    //String description = e.getString("description");
+                    String description = android.text.Html.fromHtml(e.getString("description")).toString();
                     String address = e.getString("venue_address");
+                    if (description.equals("null") || description.equals("")){
+                        break;
+                    }
                     eventNames.add(title);
                     myEvents.add(new Event(title,date,description,address));
                     CurrentEvents.events.add(new Event(title,date,description,address));
