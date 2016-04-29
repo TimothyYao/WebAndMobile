@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class showEvent extends AppCompatActivity {
         TextView date_text = (TextView)findViewById(R.id.dateView);
         date_text.setText(date);
         TextView description_text = (TextView)findViewById(R.id.descriptionView);
+        description_text.setMovementMethod(new ScrollingMovementMethod());
         description_text.setText(description);
         TextView address_text = (TextView)findViewById(R.id.addressView);
         address_text.setText(address);
