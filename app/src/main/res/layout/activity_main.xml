@@ -18,15 +18,6 @@
         android:inputType="text"
         android:hint="Enter location"/>
 
-    <Button
-        android:id="@+id/queryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
-        android:text="Search"/>
-
-
 
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="right">
         <Button
@@ -41,6 +32,12 @@
             android:text="GPS Search"
             android:drawableRight="@android:drawable/ic_menu_mapmode"
             android:id="@+id/locationButton" />
+        <Button
+            android:id="@+id/queryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Text Search"/>
+        <!--style="@style/Base.Widget.AppCompat.Button.Borderless"-->
     </LinearLayout>
 
 
