@@ -2,4 +2,5 @@
     <string name="app_name">Yamsterdam</string>
     <string name="title_activity_show_event"> </string>
     <string name="title_activity_saved_events">savedEvents</string>
+    <string name="info">Yamsterdam was build in 2016 for the purpose of bringing awareness of nearby events to you. The user is able to search for events and save them for later viewing.</string>
 </resources>
