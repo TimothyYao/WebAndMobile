@@ -71,10 +71,12 @@ public class showEvent extends AppCompatActivity {
                 db.deleteEvent(id);
                 Snackbar.make(view, "Deleted Event: " + name, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Intent intent = new Intent(showEvent.this, savedEvents.class);
+                startActivity(intent);
 
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
