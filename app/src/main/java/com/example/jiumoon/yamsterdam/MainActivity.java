@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     new RetrieveFeedTask().execute();
                 } else {
                     Toast.makeText(getApplicationContext(),
-                            "Location Unavailable.",
+                            "Please turn on Location Services",
                             Toast.LENGTH_SHORT).show();
                 }
 
@@ -297,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
             case R.id.info:
-                Toast.makeText(this, "Info selected", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(this, "Info selected", Toast.LENGTH_SHORT)
+//                        .show();
                 Intent intent = new Intent(this, info.class);
                 startActivity(intent);
                 break;
@@ -360,8 +360,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             try {
                 JSONObject object = new JSONObject(response);
                 if (object.isNull("events")) {
-                    eventNames.add("No events found ):");
-                    arrayAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(),
+                            "No results found",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 object = object.getJSONObject("events");
@@ -383,9 +384,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     //String description = e.getString("description");
                     String description = android.text.Html.fromHtml(e.getString("description")).toString();
                     String address = e.getString("venue_address");
-                    if (description.equals("null") || description.equals("")){
-                        break;
-                    }
+//
                     eventNames.add(title);
                     myEvents.add(new Event(title,date,description,address));
                     CurrentEvents.events.add(new Event(title,date,description,address));
